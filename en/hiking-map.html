@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hiking Map · Trails from the House · Drei-Felsen-Blick Gerolstein</title>
+<meta name="description" content="Interactive hiking map: Rock Trail, Celtic Trail, Dolomites Figure-of-Eight, Eifelsteig, Kasselburg Loop and family walk — all trails start right at our house in Gerolstein.">
+<link rel="alternate" hreflang="de" href="../wanderkarte.html">
+<link rel="alternate" hreflang="en" href="hiking-map.html">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%231b4332'/%3E%3Cpath d='M4 26 L11 12 L16 20 L20 8 L28 26 Z' fill='%2395d5b2'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="../assets/vendor/leaflet/leaflet.css">
+<link rel="stylesheet" href="../assets/css/style.css">
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+
+<header class="site-header">
+  <div class="container header-inner">
+    <a class="brand" href="index.html" aria-label="Drei-Felsen-Blick — home">
+      <svg viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="7" fill="#1b4332"/><path d="M4 26 L11 12 L16 20 L20 8 L28 26 Z" fill="#95d5b2"/><path d="M9 26 L14 17 L18 26 Z" fill="#52b788"/></svg>
+      <span>Drei-Felsen-Blick<small>Holiday apartments Gerolstein</small></span>
+    </a>
+    <button class="nav-toggle" aria-label="Open menu" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+    <nav class="main-nav" aria-label="Main navigation">
+      <a href="index.html">Home</a>
+      <a href="apartments.html">Apartments</a>
+      <a href="surroundings.html">Surroundings</a>
+      <a href="hiking-map.html" class="active">Hiking map</a>
+      <a href="contact.html">Contact</a>
+    </nav>
+    <div class="lang-switch" aria-label="Choose language">
+      <a href="../wanderkarte.html" lang="de" hreflang="de">DE</a>
+      <span class="current">EN</span>
+    </div>
+  </div>
+</header>
+
+<main id="main">
+
+  <div class="page-hero">
+    <div class="container">
+      <span class="eyebrow" style="color:var(--forest-300);">Interactive hiking map</span>
+      <h1>Every trail starts at our doorstep</h1>
+      <p>Boots on, door shut, off you go: click a route in the list to see it on the map — with length, duration, difficulty and the highlights along the way. Use the checkboxes to show and hide routes.</p>
+    </div>
+  </div>
+
+  <section>
+    <div class="container">
+      <div class="map-layout">
+        <div class="route-list" id="route-list" aria-label="Hiking routes"></div>
+        <div class="map-stage">
+          <div id="map" aria-label="Interactive map with hiking routes"></div>
+          <p class="map-note">⚠️ Route courses are shown schematically — please use the linked official GPX tracks for navigation on the trail. Map data: © OpenStreetMap contributors.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="alt-bg">
+    <div class="container">
+      <span class="eyebrow">Good to know</span>
+      <h2>Hiking tips for your stay</h2>
+      <div class="card-grid">
+        <article class="card"><div class="card-body">
+          <h3>🥾 Joining the Eifelsteig</h3>
+          <p>The premium Aachen–Trier trail passes just 200 m from the house. Stages towards Daun or Hillesheim make great day hikes — and the train from Gerolstein (600 m from the house) brings you back.</p>
+        </div></article>
+        <article class="card"><div class="card-body">
+          <h3>🔦 Pack a torch</h3>
+          <p>A torch is well worth it for Buchenloch Cave on the Rock Trail — the cave is freely accessible and leads around 30 metres into the mountain.</p>
+        </div></article>
+        <article class="card"><div class="card-body">
+          <h3>🐺 Time the wolf feeding</h3>
+          <p>The Kasselburg Loop pairs perfectly with the daily flight shows and wolf feeding at the Eagle &amp; Wolf Park — check the times online beforehand.</p>
+        </div></article>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="site-footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div>
+        <h4>Drei-Felsen-Blick</h4>
+        <address>
+          Drei-Felsen-Blick Holiday Apartments<br>
+          Sonnenweg 23<br>
+          54568 Gerolstein<br>
+          Volcanic Eifel · Rhineland-Palatinate, Germany
+        </address>
+      </div>
+      <div>
+        <h4>Pages</h4>
+        <ul>
+          <li><a href="apartments.html">Apartments &amp; amenities</a></li>
+          <li><a href="surroundings.html">Surroundings &amp; attractions</a></li>
+          <li><a href="hiking-map.html">Hiking map</a></li>
+          <li><a href="contact.html">Contact &amp; getting here</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Contact</h4>
+        <ul>
+          <li><a href="tel:+491794301944">Phone: +49 179 430 1944</a></li>
+          <li><a href="contact.html">Send a booking enquiry</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Legal</h4>
+        <ul>
+          <li><a href="../impressum.html">Impressum (legal notice)</a></li>
+          <li><a href="../datenschutz.html">Privacy policy</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© <span data-year>2026</span> Drei-Felsen-Blick Holiday Apartments, Gerolstein</span>
+      <span>With a view of Munterley, Hustley &amp; Auberg</span>
+    </div>
+  </div>
+</footer>
+
+<script src="../assets/vendor/leaflet/leaflet.js"></script>
+<script src="../assets/js/data.js"></script>
+<script src="../assets/js/main.js"></script>
+<script src="../assets/js/map.js"></script>
+</body>
+</html>
