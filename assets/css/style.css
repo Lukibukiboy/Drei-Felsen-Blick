@@ -348,6 +348,27 @@ section { padding: 64px 0; }
 .card-media { aspect-ratio: 16 / 10; position: relative; overflow: hidden; }
 .card-media svg, .card-media img { width: 100%; height: 100%; object-fit: cover; }
 
+/* Echte Fotos (Wikimedia Commons) mit Bildnachweis-Chip */
+.card-media.has-photo img { animation: photo-in 0.4s ease; }
+@keyframes photo-in { from { opacity: 0; } to { opacity: 1; } }
+.img-credit {
+  position: absolute;
+  right: 6px;
+  bottom: 6px;
+  max-width: calc(100% - 12px);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  background: rgba(18, 42, 30, 0.62);
+  color: #fff;
+  font-size: 0.62rem;
+  line-height: 1.4;
+  padding: 2px 8px;
+  border-radius: 999px;
+  text-decoration: none;
+}
+.img-credit:hover { color: #fff; background: rgba(18, 42, 30, 0.85); }
+
 .card-body { padding: 20px 22px 22px; display: flex; flex-direction: column; flex: 1; }
 .card-body h3 { margin-bottom: 0.35em; }
 .card-body p { color: var(--text-muted); font-size: 0.95rem; flex: 1; }
@@ -569,6 +590,32 @@ section { padding: 64px 0; }
 .difficulty { display: inline-block; padding: 1px 9px; border-radius: 999px; font-size: 0.75rem; }
 .difficulty.leicht  { background: var(--forest-100); color: var(--forest-900); }
 .difficulty.mittel  { background: #fdeeca; color: #7a5a12; }
+
+/* Status: echter OSM-Verlauf geladen vs. schematischer Fallback */
+.geo-status {
+  display: inline-block;
+  padding: 1px 9px;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  background: var(--sage-100);
+  color: var(--text-muted);
+}
+.geo-status.live { background: var(--forest-100); color: var(--forest-900); }
+
+/* Overlay-Schalter (Waymarked Trails) */
+.overlay-toggle {
+  display: flex;
+  gap: 9px;
+  align-items: center;
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--forest-900);
+  padding: 10px 16px;
+  background: #fff;
+  border-top: 1px solid var(--sage-100);
+  cursor: pointer;
+}
+.overlay-toggle input { width: 17px; height: 17px; accent-color: var(--forest-700); cursor: pointer; }
 
 /* Marker-Popups */
 .leaflet-popup-content-wrapper { border-radius: var(--radius-s); box-shadow: var(--shadow-m); }

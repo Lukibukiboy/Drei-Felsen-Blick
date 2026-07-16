@@ -1,12 +1,16 @@
 /* ==========================================================================
    Drei-Felsen-Blick — zentrale Daten (DE/EN)
    --------------------------------------------------------------------------
-   HINWEIS ZU KOORDINATEN: Alle Koordinaten sind sorgfältig geschätzt, aber
-   NICHT vermessen. Bitte vor Veröffentlichung einmal gegen OpenStreetMap /
-   Google Maps prüfen und hier korrigieren — jede Zahl steht nur an dieser
-   einen Stelle. Die Routenverläufe sind bewusst schematisch (Luftlinien-
-   Polygone zwischen den Highlights), keine GPS-Tracks; offizielle
-   GPX-Downloads sind je Route verlinkt.
+   HINWEIS ZU KOORDINATEN: Marker-Koordinaten sind sorgfältig geschätzt, aber
+   NICHT vermessen — bitte einmal gegen OpenStreetMap prüfen; jede Zahl steht
+   nur an dieser einen Stelle.
+   ROUTEN: Der echte Verlauf wird im Browser des Besuchers live aus
+   OpenStreetMap (Overpass) bzw. BRouter geladen ("geo"-Feld je Route,
+   Logik in map.js) und lokal gecacht. Das "path"-Feld ist nur noch der
+   schematische Offline-Fallback.
+   FOTOS: Attraktionen mit "photo"-Feld nutzen ein festes Wikimedia-Commons-
+   Bild; ohne "photo" sucht der Browser per Commons-Geosearch ein Bild in der
+   Nähe der Koordinaten. Schlägt beides fehl, bleibt die SVG-Illustration.
    ========================================================================== */
 
 const SITE_DATA = {
@@ -31,6 +35,10 @@ const SITE_DATA = {
     {
       id: "dolomiten",
       cat: "natur",
+      photo: {
+        file: "Aussichtspunkt Munterley - geo.hlipp.de - 6528.jpg",
+        page: "https://commons.wikimedia.org/wiki/File:Aussichtspunkt_Munterley_-_geo.hlipp.de_-_6528.jpg"
+      },
       lat: 50.2258, lng: 6.669,
       distance: { de: "200 m", en: "200 m" },
       walk: { de: "ca. 5 Min. zu Fuß", en: "approx. 5 min on foot" },
@@ -55,6 +63,10 @@ const SITE_DATA = {
     {
       id: "papenkaule",
       cat: "natur",
+      photo: {
+        file: "Die Papenkaule.jpg",
+        page: "https://commons.wikimedia.org/wiki/File:Die_Papenkaule.jpg"
+      },
       lat: 50.231, lng: 6.674,
       distance: { de: "1,5 km", en: "1.5 km" },
       walk: { de: "ca. 30 Min. zu Fuß", en: "approx. 30 min on foot" },
@@ -79,6 +91,10 @@ const SITE_DATA = {
     {
       id: "kasselburg",
       cat: "familie",
+      photo: {
+        file: "Adler- und Wolfspark Kasselburg Greifvogel3.png",
+        page: "https://commons.wikimedia.org/wiki/File:Adler-_und_Wolfspark_Kasselburg_Greifvogel3.png"
+      },
       lat: 50.2352, lng: 6.6893,
       distance: { de: "4 km", en: "4 km" },
       walk: { de: "ca. 1 Std. zu Fuß / 8 Min. Auto", en: "approx. 1 h on foot / 8 min by car" },
@@ -163,6 +179,10 @@ const SITE_DATA = {
     {
       id: "maare",
       cat: "natur",
+      photo: {
+        file: "Dauner Maare, Weinfelder Maar oder Totenmaar.jpg",
+        page: "https://commons.wikimedia.org/wiki/File:Dauner_Maare,_Weinfelder_Maar_oder_Totenmaar.jpg"
+      },
       lat: 50.1775, lng: 6.848,
       distance: { de: "20 km", en: "20 km" },
       walk: { de: "ca. 25 Min. Auto", en: "approx. 25 min by car" },
@@ -175,11 +195,19 @@ const SITE_DATA = {
   ],
 
   /* ------------------------------------------------------------------------
-     Wanderrouten ab Haus. path = schematischer Verlauf (siehe Hinweis oben).
+     Wanderrouten ab Haus.
+     path = schematischer Verlauf, dient nur noch als OFFLINE-FALLBACK.
+     geo  = Quelle für den echten Verlauf, wird im Browser des Besuchers
+            geladen (siehe map.js):
+       { type:"overpass", rel:<id> }         feste OSM-Relation
+       { type:"overpass", name:"<regex>" }   OSM-Relation per Namenssuche
+       { type:"combine",  of:[ids] }         Kombination anderer Routen
+       { type:"brouter",  waypoints:[[lng,lat],…] }  berechneter Tourvorschlag
      ------------------------------------------------------------------------ */
   routes: [
     {
       id: "felsenpfad",
+      geo: { type: "overpass", name: "Gerolsteiner Felsenpfad" },
       color: "#2d6a4f",
       lengthKm: 9,
       duration: { de: "ca. 3,5–4 Std.", en: "approx. 3.5–4 h" },
@@ -203,6 +231,7 @@ const SITE_DATA = {
     },
     {
       id: "keltenpfad",
+      geo: { type: "overpass", name: "Gerolsteiner Keltenpfad" },
       color: "#b5651d",
       lengthKm: 8,
       duration: { de: "ca. 3 Std.", en: "approx. 3 h" },
@@ -225,6 +254,7 @@ const SITE_DATA = {
     },
     {
       id: "dolomitenacht",
+      geo: { type: "combine", of: ["felsenpfad", "keltenpfad"] },
       color: "#453a78",
       lengthKm: 16,
       duration: { de: "ca. 6 Std.", en: "approx. 6 h" },
@@ -247,6 +277,14 @@ const SITE_DATA = {
     },
     {
       id: "kasselburgrunde",
+      suggestion: true,
+      geo: {
+        type: "brouter",
+        waypoints: [
+          [6.665, 50.2245], [6.6745, 50.2285], [6.6893, 50.2352],
+          [6.684, 50.2295], [6.665, 50.2245]
+        ]
+      },
       color: "#1e5378",
       lengthKm: 9,
       duration: { de: "ca. 3 Std. (einfach 1 Std.)", en: "approx. 3 h (one way 1 h)" },
@@ -269,6 +307,8 @@ const SITE_DATA = {
     },
     {
       id: "eifelsteig",
+      /* clip: nur der Abschnitt rund um Gerolstein wird gezeichnet (S,W,N,O) */
+      geo: { type: "overpass", rel: 1176757, clip: [50.15, 6.55, 50.3, 6.8] },
       color: "#7a5a12",
       lengthKm: 25,
       duration: { de: "Tagesetappe", en: "full-day stage" },
@@ -291,6 +331,13 @@ const SITE_DATA = {
     },
     {
       id: "familienrunde",
+      suggestion: true,
+      geo: {
+        type: "brouter",
+        waypoints: [
+          [6.665, 50.2245], [6.6705, 50.227], [6.669, 50.2258], [6.665, 50.2245]
+        ]
+      },
       color: "#52b788",
       lengthKm: 3,
       duration: { de: "ca. 1–1,5 Std.", en: "approx. 1–1.5 h" },
