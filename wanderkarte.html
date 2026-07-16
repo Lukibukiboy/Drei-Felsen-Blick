@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Wanderkarte · Touren ab Haus · Drei-Felsen-Blick Gerolstein</title>
+<meta name="description" content="Interaktive Wanderkarte: Felsenpfad, Keltenpfad, Dolomiten-Acht, Eifelsteig, Kasselburg-Runde und Familienrunde — alle Touren starten direkt an unserem Haus in Gerolstein.">
+<link rel="alternate" hreflang="de" href="wanderkarte.html">
+<link rel="alternate" hreflang="en" href="en/hiking-map.html">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%231b4332'/%3E%3Cpath d='M4 26 L11 12 L16 20 L20 8 L28 26 Z' fill='%2395d5b2'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="assets/vendor/leaflet/leaflet.css">
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+<a class="skip-link" href="#main">Zum Inhalt springen</a>
+
+<header class="site-header">
+  <div class="container header-inner">
+    <a class="brand" href="index.html" aria-label="Drei-Felsen-Blick — Startseite">
+      <svg viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="7" fill="#1b4332"/><path d="M4 26 L11 12 L16 20 L20 8 L28 26 Z" fill="#95d5b2"/><path d="M9 26 L14 17 L18 26 Z" fill="#52b788"/></svg>
+      <span>Drei-Felsen-Blick<small>Ferienwohnungen Gerolstein</small></span>
+    </a>
+    <button class="nav-toggle" aria-label="Menü öffnen" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+    <nav class="main-nav" aria-label="Hauptnavigation">
+      <a href="index.html">Start</a>
+      <a href="wohnungen.html">Wohnungen</a>
+      <a href="umgebung.html">Umgebung</a>
+      <a href="wanderkarte.html" class="active">Wanderkarte</a>
+      <a href="kontakt.html">Kontakt</a>
+    </nav>
+    <div class="lang-switch" aria-label="Sprache wählen">
+      <span class="current">DE</span>
+      <a href="en/hiking-map.html" lang="en" hreflang="en">EN</a>
+    </div>
+  </div>
+</header>
+
+<main id="main">
+
+  <div class="page-hero">
+    <div class="container">
+      <span class="eyebrow" style="color:var(--forest-300);">Interaktive Wanderkarte</span>
+      <h1>Alle Touren starten an unserer Haustür</h1>
+      <p>Wanderschuhe an, Tür zu, los: Klicken Sie eine Route in der Liste an, um sie auf der Karte zu sehen — mit Länge, Dauer, Schwierigkeit und den Highlights unterwegs. Über die Häkchen blenden Sie Routen ein und aus.</p>
+    </div>
+  </div>
+
+  <section>
+    <div class="container">
+      <div class="map-layout">
+        <div class="route-list" id="route-list" aria-label="Wanderrouten"></div>
+        <div class="map-stage">
+          <div id="map" aria-label="Interaktive Karte mit Wanderrouten"></div>
+          <p class="map-note">⚠️ Routenverläufe schematisch dargestellt — für die Navigation unterwegs bitte die verlinkten offiziellen GPX-Tracks nutzen. Kartendaten: © OpenStreetMap-Mitwirkende.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="alt-bg">
+    <div class="container">
+      <span class="eyebrow">Gut zu wissen</span>
+      <h2>Wander-Tipps für Ihren Aufenthalt</h2>
+      <div class="card-grid">
+        <article class="card"><div class="card-body">
+          <h3>🥾 Einstieg Eifelsteig</h3>
+          <p>Der Premiumweg Aachen–Trier verläuft nur 200 m vom Haus. Etappen Richtung Daun oder Hillesheim lassen sich prima als Tagestour gehen — zurück geht es mit der Bahn ab Gerolstein (600 m vom Haus).</p>
+        </div></article>
+        <article class="card"><div class="card-body">
+          <h3>🔦 Taschenlampe einpacken</h3>
+          <p>Für die Buchenlochhöhle auf dem Felsenpfad lohnt eine Taschenlampe — die Höhle ist frei zugänglich und führt rund 30 Meter in den Berg.</p>
+        </div></article>
+        <article class="card"><div class="card-body">
+          <h3>🐺 Wolfsfütterung einplanen</h3>
+          <p>Die Kasselburg-Runde lässt sich perfekt auf die täglichen Flugvorführungen und die Wolfsfütterung im Adler- &amp; Wolfspark abstimmen — Zeiten vorab online prüfen.</p>
+        </div></article>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="site-footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div>
+        <h4>Drei-Felsen-Blick</h4>
+        <address>
+          Ferienwohnungen Drei-Felsen-Blick<br>
+          Sonnenweg 23<br>
+          54568 Gerolstein<br>
+          Vulkaneifel · Rheinland-Pfalz
+        </address>
+      </div>
+      <div>
+        <h4>Seiten</h4>
+        <ul>
+          <li><a href="wohnungen.html">Wohnungen &amp; Ausstattung</a></li>
+          <li><a href="umgebung.html">Umgebung &amp; Attraktionen</a></li>
+          <li><a href="wanderkarte.html">Wanderkarte</a></li>
+          <li><a href="kontakt.html">Kontakt &amp; Anreise</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Kontakt</h4>
+        <ul>
+          <li><a href="tel:+491794301944">Telefon: 0179 430 1944</a></li>
+          <li><a href="kontakt.html">Buchungsanfrage senden</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Rechtliches</h4>
+        <ul>
+          <li><a href="impressum.html">Impressum</a></li>
+          <li><a href="datenschutz.html">Datenschutz</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© <span data-year>2026</span> Ferienwohnungen Drei-Felsen-Blick, Gerolstein</span>
+      <span>Mit Blick auf Munterley, Hustley &amp; Auberg</span>
+    </div>
+  </div>
+</footer>
+
+<script src="assets/vendor/leaflet/leaflet.js"></script>
+<script src="assets/js/data.js"></script>
+<script src="assets/js/main.js"></script>
+<script src="assets/js/map.js"></script>
+</body>
+</html>
