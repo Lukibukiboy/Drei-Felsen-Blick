@@ -1,8 +1,15 @@
 /* ==========================================================================
    Drei-Felsen-Blick — interaktive Wanderkarte (Leaflet, lokal gebündelt)
+
    Erwartet: #map (Karte) und #route-list (Sidebar). Deep-Links:
-   wanderkarte.html#poi-<id>  → Attraktion fokussieren
+   wanderkarte.html#poi-<id>   → Attraktion fokussieren
    wanderkarte.html#route-<id> → Route fokussieren
+
+   ECHTE ROUTENVERLÄUFE: Beim Laden holt der Browser die realen Verläufe —
+   OSM-Relationen über die Overpass-API, Tourvorschläge über BRouter
+   (Wander-Routing). Ergebnisse werden 7 Tage in localStorage gecacht.
+   Ohne Internet / bei API-Fehlern bleibt der schematische Verlauf aus
+   data.js stehen und die Karte funktioniert wie zuvor.
    ========================================================================== */
 
 (function initMap() {
@@ -14,7 +21,20 @@
     moreInfo: { de: "Mehr in „Umgebung“", en: "More under “Surroundings”" },
     lengthLabel: { de: "Länge", en: "Length" },
     gpxLabel: { de: "Offizielle Tourinfo & GPX", en: "Official trail info & GPX" },
-    osmAttribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+    geoLive: { de: "Verlauf: OSM ✓", en: "Course: OSM ✓" },
+    geoCalc: { de: "Route berechnet ✓", en: "Route calculated ✓" },
+    geoSchematic: { de: "Verlauf schematisch", en: "Schematic course" },
+    suggestion: { de: "Tourvorschlag", en: "Suggested tour" },
+    noteFallback: {
+      de: "⚠️ Routenverläufe derzeit schematisch dargestellt (kein Netz zu OpenStreetMap) — für die Navigation bitte die verlinkten offiziellen GPX-Tracks nutzen. Kartendaten: © OpenStreetMap-Mitwirkende.",
+      en: "⚠️ Route courses currently shown schematically (no connection to OpenStreetMap) — please use the linked official GPX tracks for navigation. Map data: © OpenStreetMap contributors."
+    },
+    noteLive: {
+      de: "✓ Routenverläufe live aus OpenStreetMap geladen; Tourvorschläge per BRouter berechnet. Für unterwegs empfehlen wir die verlinkten offiziellen GPX-Tracks. Kartendaten: © OpenStreetMap-Mitwirkende.",
+      en: "✓ Route courses loaded live from OpenStreetMap; suggested tours calculated via BRouter. For the trail itself we recommend the linked official GPX tracks. Map data: © OpenStreetMap contributors."
+    },
+    osmAttribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+    wmtAttribution: 'Wanderwege: <a href="https://hiking.waymarkedtrails.org">Waymarked Trails</a> (CC-BY-SA)'
   };
   const surroundingsPage = LANG === "en" ? "surroundings.html" : "umgebung.html";
 
@@ -25,6 +45,19 @@
     maxZoom: 18,
     attribution: MAP_STRINGS.osmAttribution
   }).addTo(map);
+
+  /* Overlay: alle markierten Wanderwege (Waymarked Trails) ------------------ */
+  const wmtLayer = L.tileLayer("https://hiking.waymarkedtrails.org/hiking/{z}/{x}/{y}.png", {
+    maxZoom: 18,
+    opacity: 0.85,
+    attribution: MAP_STRINGS.wmtAttribution
+  });
+  const wmtToggle = document.getElementById("wmt-toggle");
+  if (wmtToggle) {
+    wmtToggle.addEventListener("change", () => {
+      if (wmtToggle.checked) wmtLayer.addTo(map); else map.removeLayer(wmtLayer);
+    });
+  }
 
   /* Haus-Marker ------------------------------------------------------------ */
   const houseIcon = L.divIcon({
@@ -66,7 +99,8 @@
   });
 
   /* Routen + Sidebar --------------------------------------------------------- */
-  const routeLayers = {};
+  const routeLayers = {};   // id → L.featureGroup
+  const routeVisible = {};  // id → checkbox-Zustand
   const routeCards = {};
   const listEl = document.getElementById("route-list");
 
@@ -79,28 +113,49 @@
     const layer = routeLayers[id];
     if (!layer) return;
     if (!map.hasLayer(layer)) layer.addTo(map);
+    routeVisible[id] = true;
     const cb = routeCards[id] && routeCards[id].querySelector("input");
     if (cb) cb.checked = true;
     map.fitBounds(layer.getBounds(), { padding: [36, 36] });
     setActiveCard(id);
   }
 
+  /* Ein Routen-Layer aus 1..n Segmenten bauen */
+  function buildRouteLayer(route, segments) {
+    const group = L.featureGroup(
+      segments.map((seg) => L.polyline(seg, {
+        color: route.color,
+        weight: 4.5,
+        opacity: 0.85,
+        dashArray: route.id === "eifelsteig" ? "8 7" : null
+      }))
+    );
+    group.bindPopup(`<h4>${route.name[LANG]}</h4><p>${route.text[LANG]}</p>`);
+    group.on("click", () => setActiveCard(route.id));
+    return group;
+  }
+
+  function setGeoStatus(routeId, state) {
+    const el = document.querySelector(`[data-geo="${routeId}"]`);
+    if (!el) return;
+    el.classList.toggle("live", state !== "schematic");
+    el.textContent = state === "osm" ? MAP_STRINGS.geoLive[LANG]
+      : state === "calc" ? MAP_STRINGS.geoCalc[LANG]
+      : MAP_STRINGS.geoSchematic[LANG];
+  }
+
   SITE_DATA.routes.forEach((route) => {
-    const line = L.polyline(route.path, {
-      color: route.color,
-      weight: 4.5,
-      opacity: 0.85,
-      dashArray: route.id === "eifelsteig" ? "8 7" : null
-    }).addTo(map);
-    line.bindPopup(`<h4>${route.name[LANG]}</h4><p>${route.text[LANG]}</p>`);
-    line.on("click", () => setActiveCard(route.id));
-    routeLayers[route.id] = line;
+    const group = buildRouteLayer(route, [route.path]).addTo(map);
+    routeLayers[route.id] = group;
+    routeVisible[route.id] = true;
 
     if (!listEl) return;
     const card = document.createElement("article");
     card.className = "route-card";
     card.id = "route-" + route.id;
     card.style.setProperty("--route-color", route.color);
+    const suggestionBadge = route.suggestion
+      ? `<span class="badge familie">${MAP_STRINGS.suggestion[LANG]}</span>` : "";
     card.innerHTML = `
       <div class="route-card-head">
         <span class="route-swatch"></span>
@@ -111,15 +166,18 @@
         <span>${MAP_STRINGS.lengthLabel[LANG]}: ${String(route.lengthKm).replace(".", LANG === "de" ? "," : ".")} km</span>
         <span>${route.duration[LANG]}</span>
         <span class="difficulty ${route.difficulty}">${DIFFICULTY_LABELS[route.difficulty][LANG]}</span>
+        ${suggestionBadge}
+        <span class="geo-status" data-geo="${route.id}">${MAP_STRINGS.geoSchematic[LANG]}</span>
       </div>
       <p>${route.highlights[LANG].join(" · ")}</p>
       <p style="margin-top:6px;"><a class="route-gpx" href="${route.gpx}" target="_blank" rel="noopener">${MAP_STRINGS.gpxLabel[LANG]} ↗</a></p>`;
 
     card.querySelector("input").addEventListener("change", (e) => {
+      routeVisible[route.id] = e.target.checked;
       if (e.target.checked) {
-        line.addTo(map);
+        routeLayers[route.id].addTo(map);
       } else {
-        map.removeLayer(line);
+        map.removeLayer(routeLayers[route.id]);
         card.classList.remove("active");
       }
     });
@@ -156,4 +214,136 @@
     const all = L.featureGroup(Object.values(routeLayers).concat([houseMarker]));
     map.fitBounds(all.getBounds(), { padding: [30, 30] });
   }
+
+  /* ==========================================================================
+     Echte Routenverläufe nachladen (Overpass + BRouter, mit Cache & Fallback)
+     ========================================================================== */
+  const GEO_CACHE_KEY = "dfb-geo-v1";
+  const GEO_TTL_MS = 7 * 24 * 3600 * 1000;
+
+  function readGeoCache() {
+    try {
+      const c = JSON.parse(localStorage.getItem(GEO_CACHE_KEY));
+      if (c && Date.now() - c.ts < GEO_TTL_MS) return c.data;
+    } catch (e) {}
+    return null;
+  }
+
+  function clipSegments(segments, bbox) {
+    if (!bbox) return segments;
+    const [s, w, n, e] = bbox;
+    const inside = (p) => p[0] >= s && p[0] <= n && p[1] >= w && p[1] <= e;
+    const out = [];
+    segments.forEach((seg) => {
+      let cur = [];
+      seg.forEach((p) => {
+        if (inside(p)) {
+          cur.push(p);
+        } else if (cur.length > 1) {
+          out.push(cur);
+          cur = [];
+        } else {
+          cur = [];
+        }
+      });
+      if (cur.length > 1) out.push(cur);
+    });
+    return out;
+  }
+
+  async function fetchOverpass(routes) {
+    const parts = [];
+    routes.forEach((r) => {
+      if (r.geo.rel) parts.push(`relation(${r.geo.rel});`);
+      if (r.geo.name) parts.push(`relation["route"="hiking"]["name"~"${r.geo.name}"](50.16,6.55,50.3,6.8);`);
+    });
+    if (!parts.length) return {};
+    const query = `[out:json][timeout:25];(${parts.join("")});out geom;`;
+    const resp = await fetch("https://overpass-api.de/api/interpreter", {
+      method: "POST",
+      body: "data=" + encodeURIComponent(query),
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      signal: AbortSignal.timeout(20000)
+    });
+    if (!resp.ok) throw new Error("overpass " + resp.status);
+    const json = await resp.json();
+    const result = {};
+    (json.elements || []).forEach((el) => {
+      if (el.type !== "relation") return;
+      const segments = (el.members || [])
+        .filter((m) => m.type === "way" && Array.isArray(m.geometry))
+        .map((m) => m.geometry.map((g) => [g.lat, g.lon]))
+        .filter((seg) => seg.length > 1);
+      if (!segments.length) return;
+      const route = routes.find((r) =>
+        (r.geo.rel && r.geo.rel === el.id) ||
+        (r.geo.name && el.tags && (el.tags.name || "").includes(r.geo.name))
+      );
+      if (route) result[route.id] = clipSegments(segments, route.geo.clip);
+    });
+    return result;
+  }
+
+  async function fetchBrouter(route) {
+    const lonlats = route.geo.waypoints.map((p) => p.join(",")).join("|");
+    const url = "https://brouter.de/brouter?lonlats=" + encodeURIComponent(lonlats) +
+      "&profile=hiking-mountain&alternativeidx=0&format=geojson";
+    const resp = await fetch(url, { signal: AbortSignal.timeout(20000) });
+    if (!resp.ok) throw new Error("brouter " + resp.status);
+    const json = await resp.json();
+    const coords = json.features && json.features[0] &&
+      json.features[0].geometry && json.features[0].geometry.coordinates;
+    if (!coords || coords.length < 2) throw new Error("brouter empty");
+    return [coords.map((c) => [c[1], c[0]])];
+  }
+
+  function applyRealGeometry(routeId, segments, state) {
+    const route = SITE_DATA.routes.find((r) => r.id === routeId);
+    if (!route || !segments || !segments.length) return;
+    const old = routeLayers[routeId];
+    const fresh = buildRouteLayer(route, segments);
+    if (map.hasLayer(old)) map.removeLayer(old);
+    if (routeVisible[routeId]) fresh.addTo(map);
+    routeLayers[routeId] = fresh;
+    setGeoStatus(routeId, state);
+  }
+
+  async function loadRealGeometry() {
+    let geo = readGeoCache();
+    if (!geo) {
+      geo = {};
+      const overpassRoutes = SITE_DATA.routes.filter((r) => r.geo && r.geo.type === "overpass");
+      const brouterRoutes = SITE_DATA.routes.filter((r) => r.geo && r.geo.type === "brouter");
+      const [overpassRes, ...brouterRes] = await Promise.allSettled([
+        fetchOverpass(overpassRoutes),
+        ...brouterRoutes.map((r) => fetchBrouter(r))
+      ]);
+      if (overpassRes.status === "fulfilled") Object.assign(geo, overpassRes.value);
+      brouterRoutes.forEach((r, i) => {
+        if (brouterRes[i].status === "fulfilled") geo[r.id] = brouterRes[i].value;
+      });
+      // Kombinationsrouten aus bereits geladenen Verläufen zusammensetzen
+      SITE_DATA.routes.filter((r) => r.geo && r.geo.type === "combine").forEach((r) => {
+        const pieces = r.geo.of.map((id) => geo[id]).filter(Boolean);
+        if (pieces.length === r.geo.of.length) geo[r.id] = [].concat(...pieces);
+      });
+      if (Object.keys(geo).length) {
+        try { localStorage.setItem(GEO_CACHE_KEY, JSON.stringify({ ts: Date.now(), data: geo })); } catch (e) {}
+      }
+    }
+
+    let anyLive = false;
+    SITE_DATA.routes.forEach((r) => {
+      if (geo[r.id]) {
+        applyRealGeometry(r.id, geo[r.id], r.geo && r.geo.type === "brouter" ? "calc" : "osm");
+        anyLive = true;
+      }
+    });
+    const note = document.getElementById("map-note-text");
+    if (note && anyLive) note.textContent = MAP_STRINGS.noteLive[LANG];
+  }
+
+  const note = document.getElementById("map-note-text");
+  if (note) note.textContent = MAP_STRINGS.noteFallback[LANG];
+  loadRealGeometry().catch(() => { /* Fallback: schematische Linien bleiben */ });
 })();

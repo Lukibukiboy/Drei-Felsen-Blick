@@ -8,7 +8,8 @@ const LANG = document.documentElement.lang === "en" ? "en" : "de";
 const UI_STRINGS = {
   showOnMap: { de: "Auf der Karte zeigen", en: "Show on the map" },
   fromHouse: { de: "vom Haus", en: "from the house" },
-  all: { de: "Alle", en: "All" }
+  all: { de: "Alle", en: "All" },
+  photoCredit: { de: "Foto", en: "Photo" }
 };
 
 /* Mobile Navigation ------------------------------------------------------- */
@@ -42,13 +43,112 @@ function attractionArt(att) {
     </svg>`;
 }
 
+/* Echte Fotos von Wikimedia Commons ----------------------------------------
+   Stufe 1: festes Bild aus data.js (photo.file) über Special:FilePath.
+   Stufe 2: Commons-Geosearch nahe den Koordinaten (CORS-fähige API).
+   Stufe 3: nichts gefunden/offline → SVG-Illustration bleibt stehen.
+   Ergebnisse werden 7 Tage in localStorage gecacht. */
+const IMG_CACHE_KEY = "dfb-img-v1";
+const CACHE_TTL_MS = 7 * 24 * 3600 * 1000;
+
+function readCache(key) {
+  try {
+    const c = JSON.parse(localStorage.getItem(key));
+    if (c && Date.now() - c.ts < CACHE_TTL_MS) return c.data;
+  } catch (e) { /* privater Modus o. Ä. */ }
+  return null;
+}
+function writeCache(key, data) {
+  try { localStorage.setItem(key, JSON.stringify({ ts: Date.now(), data })); } catch (e) {}
+}
+
+function commonsFileUrl(file, width) {
+  return "https://commons.wikimedia.org/wiki/Special:FilePath/" +
+    encodeURIComponent(file) + "?width=" + (width || 800);
+}
+
+function stripHtml(s) {
+  const d = document.createElement("div");
+  d.innerHTML = s || "";
+  return (d.textContent || "").trim();
+}
+
+function preloadImage(url) {
+  return new Promise((resolve, reject) => {
+    const im = new Image();
+    im.onload = () => resolve(url);
+    im.onerror = reject;
+    im.src = url;
+  });
+}
+
+async function geosearchPhoto(att) {
+  const cache = readCache(IMG_CACHE_KEY) || {};
+  if (att.id in cache) return cache[att.id]; // auch negativer Treffer (null) gecacht
+  let result = null;
+  try {
+    const api = "https://commons.wikimedia.org/w/api.php" +
+      "?action=query&generator=geosearch&ggscoord=" + att.lat + "%7C" + att.lng +
+      "&ggsradius=500&ggslimit=1&ggsnamespace=6" +
+      "&prop=imageinfo&iiprop=url%7Cextmetadata&iiurlwidth=800&format=json&origin=*";
+    const resp = await fetch(api, { signal: AbortSignal.timeout(8000) });
+    if (!resp.ok) throw new Error("commons " + resp.status);
+    const json = await resp.json();
+    const pages = json.query && json.query.pages ? Object.values(json.query.pages) : [];
+    const info = pages.length && pages[0].imageinfo && pages[0].imageinfo[0];
+    if (info && info.thumburl) {
+      const meta = info.extmetadata || {};
+      result = {
+        url: info.thumburl,
+        page: info.descriptionurl || "https://commons.wikimedia.org",
+        credit: stripHtml(meta.Artist && meta.Artist.value) || "Wikimedia Commons",
+        license: stripHtml(meta.LicenseShortName && meta.LicenseShortName.value)
+      };
+    }
+  } catch (e) { /* offline / API nicht erreichbar → SVG bleibt */ }
+  cache[att.id] = result;
+  writeCache(IMG_CACHE_KEY, cache);
+  return result;
+}
+
+async function enhanceCardMedia(att, mediaEl) {
+  let photo = null;
+  if (att.photo && att.photo.file) {
+    const url = commonsFileUrl(att.photo.file, 800);
+    try {
+      await preloadImage(url);
+      photo = { url, page: att.photo.page, credit: "Wikimedia Commons", license: "" };
+    } catch (e) { /* kuratiertes Bild nicht ladbar → Geosearch versuchen */ }
+  }
+  if (!photo) {
+    photo = await geosearchPhoto(att);
+    if (photo) {
+      try { await preloadImage(photo.url); } catch (e) { photo = null; }
+    }
+  }
+  if (!photo || !mediaEl.isConnected) return;
+  const img = document.createElement("img");
+  img.src = photo.url;
+  img.alt = att.name[LANG];
+  img.loading = "lazy";
+  const credit = document.createElement("a");
+  credit.className = "img-credit";
+  credit.href = photo.page;
+  credit.target = "_blank";
+  credit.rel = "noopener";
+  credit.textContent = "© " + UI_STRINGS.photoCredit[LANG] + ": " +
+    (photo.credit || "Wikimedia Commons") + (photo.license ? " · " + photo.license : "");
+  mediaEl.replaceChildren(img, credit);
+  mediaEl.classList.add("has-photo");
+}
+
 /* Attraktions-Karten (Umgebung + Startseiten-Teaser) ----------------------- */
 function attractionCard(att, mapPage) {
   const card = document.createElement("article");
   card.className = "card";
   card.dataset.cat = att.cat;
   card.innerHTML = `
-    <div class="card-media">${attractionArt(att)}</div>
+    <div class="card-media" data-att="${att.id}">${attractionArt(att)}</div>
     <div class="card-body">
       <div class="card-meta">
         <span class="badge ${att.cat}">${SITE_DATA.categories[att.cat][LANG]}</span>
@@ -58,6 +158,7 @@ function attractionCard(att, mapPage) {
       <p>${att.text[LANG]}</p>
       <a class="card-link" href="${mapPage}#poi-${att.id}">${UI_STRINGS.showOnMap[LANG]}</a>
     </div>`;
+  enhanceCardMedia(att, card.querySelector(".card-media"));
   return card;
 }
 
