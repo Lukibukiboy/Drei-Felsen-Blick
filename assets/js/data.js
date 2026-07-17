@@ -15,8 +15,9 @@
 
 const SITE_DATA = {
   house: {
-    lat: 50.2245,
-    lng: 6.665,
+    /* Lage vom Eigentümer bestätigt: direkt an den Munterley-Felsen, am Sonnenweg */
+    lat: 50.2258,
+    lng: 6.669,
     name: {
       de: "Ferienwohnungen Drei-Felsen-Blick",
       en: "Drei-Felsen-Blick Holiday Apartments"
@@ -32,22 +33,6 @@ const SITE_DATA = {
   },
 
   attractions: [
-    {
-      id: "dolomiten",
-      cat: "natur",
-      photo: {
-        file: "Aussichtspunkt Munterley - geo.hlipp.de - 6528.jpg",
-        page: "https://commons.wikimedia.org/wiki/File:Aussichtspunkt_Munterley_-_geo.hlipp.de_-_6528.jpg"
-      },
-      lat: 50.2258, lng: 6.669,
-      distance: { de: "200 m", en: "200 m" },
-      walk: { de: "ca. 5 Min. zu Fuß", en: "approx. 5 min on foot" },
-      name: { de: "Gerolsteiner Dolomiten & Munterley", en: "Gerolstein Dolomites & Munterley" },
-      text: {
-        de: "Die Namensgeber unseres Hauses: Die mächtigen Dolomitfelsen — Munterley (482 m), Hustley und Auberg — ragen direkt hinter dem Haus auf. Vom Munterley-Plateau blickt man weit über Gerolstein und das Kylltal. Seit 1990 Naturschutzgebiet.",
-        en: "Our house is named after them: the mighty dolomite rocks — Munterley (482 m), Hustley and Auberg — rise directly behind the house. From the Munterley plateau you look far across Gerolstein and the Kyll valley. A nature reserve since 1990."
-      }
-    },
     {
       id: "buchenloch",
       cat: "natur",
@@ -223,10 +208,9 @@ const SITE_DATA = {
         en: ["Munterley viewpoint", "Buchenloch Cave", "Papenkaule", "Hustley"]
       },
       path: [
-        [50.2245, 6.665], [50.225, 6.668], [50.2258, 6.669], [50.227, 6.6705],
-        [50.2285, 6.672], [50.231, 6.674], [50.2318, 6.678], [50.2295, 6.681],
-        [50.2272, 6.6795], [50.2255, 6.6765], [50.2238, 6.672], [50.2232, 6.668],
-        [50.2245, 6.665]
+        [50.2258, 6.669], [50.227, 6.6705], [50.2285, 6.672], [50.231, 6.674],
+        [50.2318, 6.678], [50.2295, 6.681], [50.2272, 6.6795], [50.2255, 6.6765],
+        [50.2238, 6.672], [50.2232, 6.668], [50.2258, 6.669]
       ]
     },
     {
@@ -247,9 +231,9 @@ const SITE_DATA = {
         en: ["Dietzenley with lookout tower", "Celtic ring wall", "Gerolstein forest"]
       },
       path: [
-        [50.2245, 6.665], [50.2232, 6.668], [50.2205, 6.671], [50.2165, 6.6735],
+        [50.2258, 6.669], [50.2232, 6.668], [50.2205, 6.671], [50.2165, 6.6735],
         [50.2115, 6.675], [50.2075, 6.676], [50.2085, 6.6705], [50.213, 6.667],
-        [50.218, 6.6645], [50.2215, 6.6635], [50.2245, 6.665]
+        [50.218, 6.6645], [50.2215, 6.6635], [50.2258, 6.669]
       ]
     },
     {
@@ -270,9 +254,9 @@ const SITE_DATA = {
         en: ["Both loops in one day", "Munterley & Dietzenley", "starts and ends at the house"]
       },
       path: [
-        [50.2245, 6.665], [50.2258, 6.669], [50.231, 6.674], [50.2295, 6.681],
-        [50.2255, 6.6765], [50.2232, 6.668], [50.2165, 6.6735], [50.2075, 6.676],
-        [50.213, 6.667], [50.2215, 6.6635], [50.2245, 6.665]
+        [50.2258, 6.669], [50.231, 6.674], [50.2295, 6.681], [50.2255, 6.6765],
+        [50.2232, 6.668], [50.2165, 6.6735], [50.2075, 6.676], [50.213, 6.667],
+        [50.2215, 6.6635], [50.2258, 6.669]
       ]
     },
     {
@@ -281,8 +265,8 @@ const SITE_DATA = {
       geo: {
         type: "brouter",
         waypoints: [
-          [6.665, 50.2245], [6.6745, 50.2285], [6.6893, 50.2352],
-          [6.684, 50.2295], [6.665, 50.2245]
+          [6.669, 50.2258], [6.6745, 50.2285], [6.6893, 50.2352],
+          [6.684, 50.2295], [6.669, 50.2258]
         ]
       },
       color: "#1e5378",
@@ -300,9 +284,9 @@ const SITE_DATA = {
         en: ["Eagle & Wolf Park", "Kasselburg castle ruins", "Pelm forest"]
       },
       path: [
-        [50.2245, 6.665], [50.2258, 6.669], [50.2285, 6.6745], [50.2315, 6.681],
+        [50.2258, 6.669], [50.2285, 6.6745], [50.2315, 6.681],
         [50.2352, 6.6893], [50.2318, 6.6855], [50.2285, 6.6805], [50.2262, 6.6745],
-        [50.2245, 6.665]
+        [50.2258, 6.669]
       ]
     },
     {
@@ -325,7 +309,7 @@ const SITE_DATA = {
       },
       path: [
         [50.245, 6.638], [50.238, 6.6485], [50.2305, 6.6575], [50.2262, 6.6635],
-        [50.2245, 6.665], [50.2232, 6.668], [50.2205, 6.6745], [50.2135, 6.6845],
+        [50.2252, 6.6675], [50.2232, 6.668], [50.2205, 6.6745], [50.2135, 6.6845],
         [50.206, 6.696], [50.198, 6.71]
       ]
     },
@@ -335,7 +319,7 @@ const SITE_DATA = {
       geo: {
         type: "brouter",
         waypoints: [
-          [6.665, 50.2245], [6.6705, 50.227], [6.669, 50.2258], [6.665, 50.2245]
+          [6.669, 50.2258], [6.6705, 50.227], [6.6725, 50.2262], [6.669, 50.2258]
         ]
       },
       color: "#52b788",
@@ -353,8 +337,8 @@ const SITE_DATA = {
         en: ["Buchenloch Cave", "Munterley summit cross", "doable with small children"]
       },
       path: [
-        [50.2245, 6.665], [50.225, 6.668], [50.2262, 6.6695], [50.227, 6.6705],
-        [50.2258, 6.669], [50.2245, 6.665]
+        [50.2258, 6.669], [50.2262, 6.6695], [50.227, 6.6705],
+        [50.2262, 6.672], [50.2258, 6.669]
       ]
     }
   ]
